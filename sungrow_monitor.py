@@ -55,10 +55,10 @@ def receive_and_publish():
     mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     mqtt_client.connect(MQTT_HOST, MQTT_PORT, 60)
 
-# Publish each data item to MQTT
+    # Publish each data item to MQTT
     payload = {}
     payload['sensorID'] = SENSOR_ID
-    payload['timecollected'] = int(time.time()) # epoch seconds
+    payload['timecollected'] = int(time.time())  # epoch seconds
     for item in data.values():
         value = item.value
         desc = item.desc
@@ -67,7 +67,6 @@ def receive_and_publish():
         payload[desc] = value
 
     # Ensure json format
-
     payload_str = "{" + ", ".join(
         f'"{key.replace("(", "").replace(")", "").replace(" ", "_").strip()}": "{str(value).strip()}"' if not isinstance(value, int) and not value.replace(".", "", 1).isdigit() else
         f'"{key.replace("(", "").replace(")", "").replace(" ", "_").strip()}": {value}'
@@ -78,21 +77,26 @@ def receive_and_publish():
 
     mqtt_client.disconnect()
 
-def main():
+def main(interval_seconds):
     """
     Main function of the script.
 
-    The main function calls the receive_and_publish function to establish
-    a connection to the Sungrow inverter via WebSocket, retrieve data,
-    format it, and publish it to an MQTT broker.
+    The main function continuously calls the receive_and_publish function
+    with a specified interval to establish a connection to the Sungrow
+    inverter via WebSocket, retrieve data, format it, and publish it to
+    an MQTT broker.
 
     Parameters:
-        None
+        interval_seconds (int): Interval in seconds between each data publishing.
 
     Returns:
         None
     """
-    receive_and_publish()
+    while True:
+        receive_and_publish()
+        time.sleep(interval_seconds)
 
 if __name__ == "__main__":
-    main()
+    # Set the interval in seconds
+    interval_seconds = 5
+    main(interval_seconds)
