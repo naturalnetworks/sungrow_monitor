@@ -26,7 +26,7 @@ from sungrow_websocket import SungrowWebsocket
 import sdnotify
 
 # Initialize sdnotify
-notifier = sdnotify.Notifier()
+notifier = sdnotify.SystemdNotifier()
 
 # Sungrow inverter details
 SUNGROW_IP = 'sungrow.home.arpa'
